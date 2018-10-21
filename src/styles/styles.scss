@@ -1,0 +1,17 @@
+.has-sticky-footer {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.has-sticky-footer-content {
+  flex: 1;
+}
+
+.is-hidden {
+  display: none;
+}
+
+.clickable {
+  cursor: pointer;
+}

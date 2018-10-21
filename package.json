@@ -1,0 +1,32 @@
+{
+  "name": "lost-cities",
+  "version": "1.0.0",
+  "description": "Lost cities game and tools",
+  "repository": "ssh://git@gitlab.cloud.n-ask.com:2222/davidMcneil/lost-cities.git",
+  "author": "David McNeil <mcneil.david2@gmail.com>",
+  "license": "MIT",
+  "browserslist": "defaults",
+  "scripts": {
+    "start": "NODE_ENV=development parcel --out-dir=dev index.html",
+    "build": "NODE_ENV=production parcel build --detailed-report --public-url=./ index.html",
+    "clean": "rm -rf dist/ && rm -rf dev/",
+    "size": "du -sh dist/* && du -sh dist/"
+  },
+  "dependencies": {
+    "bulma": "^0.7.2",
+    "classnames": "^2.2.6",
+    "inferno": "^6.0.3",
+    "inferno-router": "^6.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@types/classnames": "^2.2.6",
+    "@types/node": "^10.12.0",
+    "babel-plugin-inferno": "^6.0.0",
+    "babel-preset-env": "^1.7.0",
+    "node-sass": "^4.9.3",
+    "parcel-bundler": "^1.10.3",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.3"
+  }
+}
