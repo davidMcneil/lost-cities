@@ -10,6 +10,10 @@ function str2uint(str: string): number {
   return n;
 }
 
+function deepEquals(a: any, b: any): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 interface ScoringParameters {
   baseValue: number;
   bonusThreshold: number;
@@ -63,6 +67,65 @@ function playerScore(scoringParameters: ScoringParameters, player: Player): numb
   return score;
 }
 
+interface NumberListInputProps {
+  numbers: number[];
+  onNumbersInput: (numbers: number[]) => void;
+}
+
+interface NumberListInputState {
+  value: string;
+}
+
+class NumberListInput extends Component<NumberListInputProps, NumberListInputState> {
+  public state: NumberListInputState = {
+    value: "",
+  };
+
+  constructor(props: NumberListInputProps, context: null) {
+    super(props, context);
+  }
+
+  public componentWillReceiveProps(nextProps: NumberListInputProps) {
+    const numbers = this.str2numberList(this.state.value);
+    if (!deepEquals(nextProps.numbers, numbers)) {
+      this.setState({ value: nextProps.numbers.join(" ") });
+    }
+  }
+
+  public render() {
+    return (
+      <input
+        class="input"
+        type="text"
+        value={this.state.value}
+        onInput={e => {
+          const value = e.currentTarget.value;
+          if (!/^(\s|[0-9]+)*$/.test(value)) {
+            return;
+          }
+          this.setState({ value });
+          const numbers = this.str2numberList(value);
+          if (!deepEquals(this.props.numbers, numbers)) {
+            this.props.onNumbersInput(numbers);
+          }
+        }}
+      />
+    );
+  }
+
+  private str2numberList(s: string): number[] {
+    let numbers = [];
+    if (s.length > 0) {
+      numbers = s
+        .replace(/\s\s+/g, " ")
+        .trim()
+        .split(" ")
+        .map(str2uint);
+    }
+    return numbers;
+  }
+}
+
 function CardSet(props: {
   scoringParameters: ScoringParameters;
   multiplier: number;
@@ -71,7 +134,6 @@ function CardSet(props: {
   setCardSet: (cardSet: number[]) => void;
 }) {
   const score = cardSetScore(props.scoringParameters, props.multiplier, props.cardSet);
-  let key;
   return (
     <div class="field has-addons is-fullwidth">
       <p class="control">
@@ -90,50 +152,7 @@ function CardSet(props: {
         </span>
       </p>
       <p class="control" style={{ width: "100%" }}>
-        <input
-          class="input"
-          type="text"
-          value={props.cardSet.join(" ")}
-          onInput={e => {
-            // Check if we even care about the input
-            if (
-              !(
-                key === "0" ||
-                key === "1" ||
-                key === "2" ||
-                key === "3" ||
-                key === "4" ||
-                key === "5" ||
-                key === "6" ||
-                key === "7" ||
-                key === "8" ||
-                key === "9" ||
-                key === " " ||
-                key === "Backspace" ||
-                key === "Delete"
-              )
-            ) {
-              return;
-            }
-            let cs = [];
-            if (e.currentTarget.value.length > 0) {
-              // Reduce all whitespace to a single character
-              let s = e.currentTarget.value.replace(/\s\s+/g, " ");
-              // This check allows us to backspace a "... 0" string
-              if (s.substr(s.length - 1) === " " && key === "Backspace") {
-                s = s.trim();
-              }
-              // Dont allow the input to start with a space
-              if (s !== " ") {
-                cs = s.split(" ").map(str2uint);
-              }
-            }
-            props.setCardSet(cs);
-          }}
-          onKeyDown={e => {
-            key = e.key;
-          }}
-        />
+        <NumberListInput numbers={props.cardSet} onNumbersInput={props.setCardSet} />
       </p>
       <p class="control">
         <a class="button is-static">{score}</a>
